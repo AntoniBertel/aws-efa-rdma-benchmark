@@ -1,0 +1,18 @@
+{
+  "language": "typescript",
+  "app": "npx ts-node main.ts",
+  "projectId": "03da414d-dde4-45d4-9721-d4ab5b5b0659",
+  "sendCrashReports": "false",
+  "terraformProviders": ["kubernetes@~>2.18", "aws@~>4.57", "null@~> 3.2.1", "local@~>2.3.0"],
+  "terraformModules": [
+    {
+      "name": "eks",
+      "source": "terraform-aws-modules/eks/aws",
+      "version": "~> 19.10.0"
+    }
+  ],
+  "context": {
+    "excludeStackIdFromLogicalIds": "true",
+    "allowSepCharsInLogicalIds": "true"
+  }
+}

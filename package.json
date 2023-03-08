@@ -1,0 +1,43 @@
+{
+  "name": "benchmarking-azure-rdma",
+  "version": "1.0.0",
+  "main": "main.js",
+  "types": "main.ts",
+  "license": "MPL-2.0",
+  "private": true,
+  "scripts": {
+    "get": "cdktf get",
+    "build": "tsc",
+    "synth": "cdktf synth",
+    "compile": "tsc --pretty",
+    "watch": "tsc -w",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "upgrade": "npm i cdktf@latest cdktf-cli@latest",
+    "upgrade:next": "npm i cdktf@next cdktf-cli@next"
+  },
+  "engines": {
+    "node": ">=14.0"
+  },
+  "dependencies": {
+    "@cdktf/provider-aws": "^12.0.4",
+    "@cdktf/provider-azurerm": "^5.0.2",
+    "@cdktf/provider-kubernetes": "^5.0.2",
+    "@cdktf/provider-local": "^5.0.0",
+    "@cdktf/provider-null": "^5.0.0",
+    "@types/js-yaml": "^4.0.5",
+    "cdktf": "^0.15.5",
+    "cdktf-cli": "^0.15.5",
+    "constructs": "^10.1.245",
+    "js-yaml": "^4.1.0",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.4.0",
+    "@types/node": "^18.13.0",
+    "jest": "^29.4.2",
+    "ts-jest": "^29.0.5",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5"
+  }
+}
