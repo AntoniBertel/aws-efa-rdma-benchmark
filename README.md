@@ -2,7 +2,7 @@
 This repository contains TF CDK code to set up an EKS cluster with an attached EFA, install the K8S EFA Device Plugin, build a K8S image with EFA drivers and OpenMPI, and then run RDMA tests on top of it.
 
 ## Intro
-Remote Direct Memory Access (RDMA) is a technology that enables high-speed data transfer between two servers using InfiniBand or Ethernet connections. In the context of Kubernetes clusters, RDMA can be used to accelerate communication between pods, which can improve the performance of applications that require high throughput and low latency.
+Remote Direct Memory Access (RDMA) enables high-throughput and low latency data transfer between servers by offloading operations to a networking card and saving CPU sykles on copying data buffers. In the context of Kubernetes clusters, RDMA can be used to accelerate communication between pods, which can improve the performance of applications that require high throughput and low latency.
 
 In this repository, you can find Terraform scripts for setting up EKS cluster and running RDMA tests on the top. Terraform CDK is used with AWS and Kubernetes providers to prepare infastructure, including the VPC, subnets, security groups, and EKS cluster itself. 
 
