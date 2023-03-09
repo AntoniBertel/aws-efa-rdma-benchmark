@@ -1,11 +1,10 @@
 ## Benchmarking RDMA in AWS EKS cluster (graviton3 + EFA 2.0)
-The repository contains TF CDK code to set up an EKS cluster and surrounding infrastructure, attach EFA nodes, install EFA Device Plugin in the cluster, build a K8S image with EFA drivers and OpenMPI, deploy it to let run RDMA benchmarks on top of them. 
-EFA and OpenMPI are enabled and working on plain nodes and in pods both. 
+The repository contains Terraform CDK code that sets up an EKS cluster and surrounding infrastructure. It also attaches EFA-powered nodes, installs the EFA Device Plugin as a DaemonSet, builds an image with EFA drivers and OpenMPI, and deploys it to run RDMA benchmarks. EFA and OpenMPI work both on plain nodes and in pods.
 
 ## Intro
-Remote Direct Memory Access (RDMA) enables high-throughput and low latency data transfer between servers by offloading operations to a networking card and saving CPU sykles on copying data buffers. In the context of Kubernetes clusters, RDMA can be used to accelerate communication between pods, which can improve the performance of applications that require high throughput and low latency.
+Remote Direct Memory Access (RDMA) enables high-throughput and low-latency data transfer between servers by offloading operations to a networking card, which saves CPU cycles on copying data buffers. In the context of Kubernetes clusters, RDMA can be used to accelerate communication between pods, which can improve the performance of applications that require high throughput and low latency.
 
-In this repository, you can find Terraform scripts for setting up EKS cluster and running RDMA tests on the top. Terraform CDK is used with AWS and Kubernetes providers to prepare infastructure, including the VPC, subnets, security groups, and EKS cluster itself. 
+This repository contains Terraform scripts for setting up an EKS cluster and running RDMA tests on top of it. Terraform CDK is used with AWS and Kubernetes providers to prepare infrastructure, including the VPC, subnets, security groups, and the EKS cluster itself.
 
 ### Terraform manages
 - EKS Cluster
