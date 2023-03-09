@@ -29,6 +29,8 @@ const getRDMAEnabledPodsDeploymentSpec = (repoName: string) => ({
           command: [
             "sleep"
           ],
+          //You could change it to run benchmarks automatically.
+          // ps: It's possible to get Nodes IPs before via DataAwsInstance and feed them in to distinguish between client and server.
           args: [
             "infinity"
           ],

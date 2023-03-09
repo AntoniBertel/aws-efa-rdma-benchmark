@@ -34,6 +34,7 @@ import { EcrRepository } from "@cdktf/provider-aws/lib/ecr-repository";
 import * as NullProvider from "./.gen/providers/null";
 import * as path from 'path';
 import { DataAwsCallerIdentity } from "@cdktf/provider-aws/lib/data-aws-caller-identity";
+import { DataAwsInstance } from "./.gen/providers/aws/data-aws-instance";
 
 export class EksClusterStack extends TerraformStack {
   public eks: DataAwsEksCluster;
@@ -81,7 +82,7 @@ export class EksClusterStack extends TerraformStack {
       }
     });
 
-    // We could be just fine with private OR public subnets. Public are more convinient to ssh, having both for the future.
+    // Private OR public subnets work just fine. Public are more convinient to ssh, setting up both for advanced scenarious. 
     const publicSubnets = ["10.0.50.0/25", "10.0.50.128/25"].map((cidr, index) => {
       return new Subnet(this, `public_${index}`, {
         vpcId: vpc.id,
@@ -141,7 +142,7 @@ export class EksClusterStack extends TerraformStack {
 
     })
 
-    // To make instances accesible
+    // To make instances accesible from internet
     const internetGateway = new InternetGateway(this, "internet-gateway", {})
     const attachment = new InternetGatewayAttachment(this, "internet-gateway-attachment", {
       vpcId: vpc.id,
@@ -234,6 +235,7 @@ export class EksClusterStack extends TerraformStack {
     });
 
 
+    // Role each EKS node gets
     const NodeInstanceRole = new IamRole(this, "NodeInstanceRole", {
       name: "NodeInstanceRole",
       assumeRolePolicy: JSON.stringify({
@@ -258,10 +260,10 @@ export class EksClusterStack extends TerraformStack {
       })
     })
 
-    //Replace here to your public key
+    //Replace here to your public key to ssh EKS EC2 nodes
     const sshKeyPair = new KeyPair(this, "ssh-key", {
       keyName: "rdma-nodepool-key",
-      publicKey: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDHt9uPCuAguq9zT4TkHusJmnkpyIdVdROOdEWbemOFyrZggbN1AVYhKIdO2vs4A8744Czvsl2uPP/B/SKJ20/I7rkuUsqpSple2oyziKmevaouIU0P1G+UjjkRWZENACKCwQAwu7QYd/hvY+wNlMd9kqAly+QiIjTDGeZobHozhPRNPj+9Iw2PKTU9pFg2gUTf36WOmFO2NuN+lNiL+odgoJcaOy0PxIFiMR5Clsm245oMfcJjdO4ylfGdvwQQBbji82APpoeZF7o5JkUigIY4mMtuUpU/RHsx1Fdy8VJLKTPyBCzN6DHFisPG3zcBpd7jla4ByegofXFi4QWc8BdBGSezOJihW9r72v+8ckrVNgzQKQeNfAOkw/BI4eTqBbpGQpcZ0HcwY1yLU6o+6rqS00jVdBEcZ85pmiBb16zUHNYl9YgIm8rt9PyklFVBh5aVd5VxbTvmeuPpF4F0v3OHE5hUTyOpy4Z5xD9fcul5j+6Mf5a8ke3sK0ZT8AxuG9HkrPY0eMWZMvzcHCm6qb2HO9HZJFcCG/CwO9ER3MUtBqeK7ksw54ga7a33XajLppPqNprxAhG1bBrPKW/fvRJ0nV7znPyDWL05z+nalAn8EPjYpHmwPjd66n/OuMXv01e9912DUyWBXpffWJae2mDiQLmAbp1CN/Y7LjblB+1kZQ== ntb@ntb-macbookpro.roam.internal"
+      publicKey: process.env.AWS_EC2_SSH_PUBLIC_KEY || "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDHt9uPCuAguq9zT4TkHusJmnkpyIdVdROOdEWbemOFyrZggbN1AVYhKIdO2vs4A8744Czvsl2uPP/B/SKJ20/I7rkuUsqpSple2oyziKmevaouIU0P1G+UjjkRWZENACKCwQAwu7QYd/hvY+wNlMd9kqAly+QiIjTDGeZobHozhPRNPj+9Iw2PKTU9pFg2gUTf36WOmFO2NuN+lNiL+odgoJcaOy0PxIFiMR5Clsm245oMfcJjdO4ylfGdvwQQBbji82APpoeZF7o5JkUigIY4mMtuUpU/RHsx1Fdy8VJLKTPyBCzN6DHFisPG3zcBpd7jla4ByegofXFi4QWc8BdBGSezOJihW9r72v+8ckrVNgzQKQeNfAOkw/BI4eTqBbpGQpcZ0HcwY1yLU6o+6rqS00jVdBEcZ85pmiBb16zUHNYl9YgIm8rt9PyklFVBh5aVd5VxbTvmeuPpF4F0v3OHE5hUTyOpy4Z5xD9fcul5j+6Mf5a8ke3sK0ZT8AxuG9HkrPY0eMWZMvzcHCm6qb2HO9HZJFcCG/CwO9ER3MUtBqeK7ksw54ga7a33XajLppPqNprxAhG1bBrPKW/fvRJ0nV7znPyDWL05z+nalAn8EPjYpHmwPjd66n/OuMXv01e9912DUyWBXpffWJae2mDiQLmAbp1CN/Y7LjblB+1kZQ== ntb@ntb-macbookpro.roam.internal"
     })
 
     // A requirmenet for EFA and besides it gives us better latencies
@@ -291,7 +293,7 @@ export class EksClusterStack extends TerraformStack {
       return accumulator
     }, FORMATION_TAGS_AS_OBJECT);
 
-    // We need this piece because AWS provider doesn't yet allow creation of node-pools with custom template and with EFA attached
+    // We need this piece because AWS provider doesn't yet allow creation of managed node-pools with custom template and with EFA attached
     const awsCloudFormationStack = new CloudformationStack(this, "aws-cloudformation-stack", {
       name: STACK_NAME,
       templateBody: JSON.stringify({
@@ -349,7 +351,6 @@ export class EksClusterStack extends TerraformStack {
               "ClusterName": clusterName,
               "InstanceTypes": [
                 "m7g.16xlarge"
-                // "m5dn.24xlarge"
               ],
               "Labels": {
                 "alpha.eksctl.io/cluster-name": clusterName,
@@ -387,6 +388,7 @@ export class EksClusterStack extends TerraformStack {
       token: this.eksAuth.token
     });
 
+    // Daemon set developed by AWS to proxy EFA to pods
     const EFADaemonset = new daemonset.Daemonset(this, "EFADaemonset", {
       metadata: {
         name: "aws-efa-k8s-device-plugin-daemonset",
@@ -396,7 +398,8 @@ export class EksClusterStack extends TerraformStack {
       dependsOn: [this.eks]
     })
 
-    // Uncomment if you use self-managed Node group, otherwice permissions are created for you
+    // Uncomment if you use self-managed Node group, otherwice permissions are created under the hood
+
     // const EKSPermissions = new configMap.ConfigMap(this, "EKSPermissions", {
     //   metadata: {
     //     namespace: "kube-system",
@@ -405,6 +408,7 @@ export class EksClusterStack extends TerraformStack {
     //   data: awsAuth(NodeInstanceRole)
     // })
 
+    // Deploying EFA-enabled pods
     const RDMAEnabledPodsDeployment = new deployment.Deployment(this, "RDMAEnabledPodsDeployment", {
       metadata: {
         name: "rdma-enabled",

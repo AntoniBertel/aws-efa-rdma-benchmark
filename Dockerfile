@@ -13,8 +13,10 @@ RUN apt-get purge -y libmlx5-1 ibverbs-utils libibverbs-dev libibverbs1
 RUN ln -snf /usr/share/zoneinfo/$CONTAINER_TIMEZONE /etc/localtime && echo $CONTAINER_TIMEZONE > /etc/timezone
 # Need them for EFA drivers installation
 ENV DEBIAN_FRONTEND=noninteractive 
+# For OpenMPI to skip root verification
 ENV OMPI_ALLOW_RUN_AS_ROOT=1
 ENV OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+
 RUN apt-get install -f -y --allow-unauthenticated --force-yes \
     sudo \
     apt-utils \

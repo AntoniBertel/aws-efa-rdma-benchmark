@@ -1,5 +1,6 @@
 ## Benchmarking RDMA in AWS EKS cluster (graviton3 + EFA 2.0)
-This repository contains TF CDK code to set up an EKS cluster with an attached EFA, install the K8S EFA Device Plugin, build a K8S image with EFA drivers and OpenMPI, and then run RDMA tests on top of it.
+The repository contains TF CDK code to set up an EKS cluster and surrounding infrastructure, attach EFA nodes, install EFA Device Plugin in the cluster, build a K8S image with EFA drivers and OpenMPI, deploy it to let run RDMA benchmarks on top of them. 
+EFA and OpenMPI are enabled and working on plain nodes and in pods both. 
 
 ## Intro
 Remote Direct Memory Access (RDMA) enables high-throughput and low latency data transfer between servers by offloading operations to a networking card and saving CPU sykles on copying data buffers. In the context of Kubernetes clusters, RDMA can be used to accelerate communication between pods, which can improve the performance of applications that require high throughput and low latency.
@@ -55,15 +56,15 @@ In this repository, you can find Terraform scripts for setting up EKS cluster an
 
 ## Preparing environment
 - AWS credentials or AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
-- Terraform and cdktf
+- Change SSH public key to your own or set in AWS_EC2_SSH_PUBLIC_KEY
+- Terraform and cdktf CLI
 - AWS CLI
 - Docker
 - Kubectl
 
 ## Set Up
 - Clone the repo
-- npm install
-- cdktf get 
+- npm install && cdktf get 
 - cdktf deploy
 - Enjoy :)
 
@@ -71,5 +72,5 @@ In this repository, you can find Terraform scripts for setting up EKS cluster an
 - cdktf destroy
 
 ## What's missing
-RDMA tests are artificial and don't mimic production workload, please keep that in mind. 
+RDMA benchmarks don't mimic production workload, please keep that in mind. 
 PingPong is a very basic benchmark, https://github.com/linux-rdma/perftest is the one to use for better quality data.
